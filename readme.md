@@ -1,32 +1,6 @@
 # Learning TYPESCRIPT ⌨
 
-It is a project over which I have been following a Typescript course (see all the notes below 🙀) and have ended with a todo-list beautiful app which is a meditation themed `todo-list`.
-
-It is using classes, so it's a good revision of `object-oriented programming` too!
-
-The tool to build it has been `Vite` (with a `Vanilla` framework), so I've had to chance to try it out too for the first time.
-
-![vite typescript](https://github.com/vanesascode/jobs-site-python-flask-dynamicdata-bootstrap/assets/131259155/420898a8-d966-446a-9fd2-e6d9d8d2b9be)
-
-## 🌟VITE
-
-- [x] run: `npm create vite@latest`
-- [x] select 'vanilla' as the framework and select 'typescript' as the variant.
-- [x] run: `npm i` to install all the dependencies
-
-- [x] run: `npm run dev`
-
-`Vite` is a build tool that is commonly used with React to make the development processmore efficient and smooth by removing any unnecessary steps or obstacles.
-
-When using Vite with React, it provides a fast and efficient development environment. Vite leverages native ES modules to enable instant server start and hot module replacement (HMR), which allows for quick updates and live reloading of React components during development.
-
-`ES modules`: ECMAScript modules or ES6 modules provide a standardized way to organize and share code in separate files, allowing developers to create modular applications. With native ES modules, you can use the import and export keywords to define dependencies between different JavaScript files. This allows you to split your code into smaller, reusable modules that can be imported and used in other files. Each module has its own scope, which helps prevent naming conflicts and promotes encapsulation.
-
-When using `hot module replacement HMR`, modified modules are replaced on-the-fly while the application is running, preserving the current state and avoiding the need to restart the entire application. This greatly speeds up the development process, as developers can see the impact of their changes in real-time, without losing their current context or application state.
-
-## 🌟Typescript
-
-### SETUP
+### COMPILING TYPESCRIPT INTO JAVASCRIPT
 
 - [x] npm install -g typescript
 
@@ -56,7 +30,20 @@ You can also activate the option `"noEmitOnError": true` so the it doesn't compi
 
 ---
 
-### Typescript features
+### PROJECT STRUCTURE
+
+FILE TREE
+
+- Source folder: typescript file
+- Build folder: compiled work ( html, css and js files )
+
+Once you have your files created ( html and typescript ) and all connected ( in the html file you connect the future js file that will be created ), and the tsconfig.json file configured, just run `tsc -w` and the js file will be automatically created in its proper place.
+
+---
+
+---
+
+## Typescript Learning Notes:
 
 Typescript has been developed with Typescript. VSCode too! 😂
 
