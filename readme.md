@@ -1,5 +1,7 @@
 # Learning TYPESCRIPT ⌨
 
+Learning Typescript with [Dave Gray](https://www.youtube.com/@DaveGrayTeachesCode)
+
 ### COMPILING TYPESCRIPT INTO JAVASCRIPT
 
 - [x] npm install -g typescript
@@ -55,13 +57,64 @@ Typescript has been developed with Typescript. VSCode too! 😂
 
 🔹 `name` is a reserved keyword that represents the name of a class or function. It may let you use it as a variable, but it is generally not recommended to use reserved keywords as variable names to avoid confusion and potential issues.
 
-🔹 In TypeScript, `type inference` refers to the compiler's ability to automatically deduce the type of a variable or expression based on its value and context. Instead of explicitly specifying the type of each variable, TypeScript can analyze the code and determine the most appropriate type based on the available information.
+### Type inference
+
+It refers to the compiler's ability to automatically deduce the type of a variable or expression based on its value and context. Instead of explicitly specifying the type of each variable, TypeScript can analyze the code and determine the most appropriate type based on the available information.
 
 For example, if you declare a variable and initialize it with a number, TypeScript will infer that the variable is of type number. Similarly, if you assign a string to another variable, TypeScript will infer that the variable is of type string.
 
-🔴 Careful with the word `any` since it is telling Typescript that it has to ignore the type of your variable (e.g. let anyValue: any = 'hola -- it's not gonna treat anyValue as anything.). Also careful with `unknown`.It is similar to the any type, but with stricter type checking.
+🔴 Careful with the word `any` since it is telling Typescript that it has to ignore the type of your variable.
+
+e.g. TS's gonna treat 'anyValue' as anything:
+
+```
+let anyValue: any = 'hola'
+```
+
+Also careful with `unknown`.It is similar to the any type, but with stricter type checking (see below in the section 'Void, Never and Unknown')
 
 👉 It is a good idea to define the type when Typescript tells you to, cos otherwise implicity defines it as 'any'.
+
+### Assertions or Casting
+
+It is a way to tell the TypeScript compiler about the type of a value when the compiler cannot infer it automatically. It allows you to override the default type inference and explicitly specify the type of a variable or expression.
+
+```
+let num: unknown = 10;
+
+// Assertion using the 'as' keyword
+let square = (num as number) * (num as number);
+console.log(square); // Output: 100
+```
+
+In this example, we have a variable num of type unknown . The unknown type is used when the type of a value is not known at compile-time. However, we know that num is actually a number, so we use the assertion syntax (num as number) to tell the compiler that we want to treat num as a number.
+
+By asserting num as a number, we can perform mathematical operations on it without any compilation errors.
+
+(see below, in the functions section, about the `Definite Assignment Assertion Operator`)
+
+🔹 Real example:
+
+```
+const year = document.getElementById("year")! as HTMLElement;
+const thisYear = new Date().getFullYear() as unknown as number;
+year.setAttribute("data-year", thisYear.toString());
+year.textContent = thisYear.toString();
+```
+
+In TypeScript, the `exclamation mark (!)` is known as a non-null assertion operator. It is used to tell the compiler that the value obtained from document.getElementById("year") will not be null or undefined.
+
+The `as HTMLElement` part asserts that the value returned by document.getElementById("year") will always be an HTMLElement, and not null or undefined. If the value is null or undefined, it will throw a runtime error.
+
+This assertion allows you to safely use the year variable without worrying about null or undefined values.
+
+🔹Forced casting or double casting (two assertions). Example:
+
+```
+10 as unknown as string;
+```
+
+It is needed to say as unknown first, cos otherwise TS wouldn't like 10 to be as string, it's too obvious it's a number.
 
 ### Functions
 
@@ -93,20 +146,26 @@ const greetGuitarist = (guitarist: Guitarist) => {
 If you don't have a type:
 
 ```
-function sayHi({ name, age}: {name: string, age: number}) {
-
+function sayHi({ name, age }: { name: string, age: number }) {
+  console.log(`Hi ${name}! You are ${age} years old.`);
 }
+
+sayHi({ name: "John", age: 25 });
 ```
 
 Or:
 
 ```
-function sayHi(person; {name: string, age: number}) {
-  const { name, age } = person
+function sayHi(person: {name: string, age: number}) {
+  const { name, age } = person;
+  console.log(`Hi ${name}! You are ${age} years old.`);
 }
+
+sayHi({ name: "Alice", age: 30 });
+
 ```
 
-🔹 How to give a type to an arrow function?
+🔹 How to give types to an arrow function?
 
 ```
 const add = (a: number, b: number): number => {
@@ -114,7 +173,7 @@ const add = (a: number, b: number): number => {
 }
 ```
 
-🔹 How to give a type to a function that is a parameter of another function? :
+🔹 How to give types to a function that is a parameter of another function? :
 
 ```
 const sayHiFromFunction = (fn: (name: string) => void) => {
@@ -128,11 +187,13 @@ const sayHi = (name: string) => {
 sayHiFromFunction(sayHi)
 ```
 
-We say 'void' cos the function is not expected to have a 'return' or it doesn't matter if is has it.
+### Void, Never and Unknown
+
+We say 'void' in the previous example cos the function is not expected to have a 'return' or it doesn't matter if is has it.
 
 🔹`void` is used when a function does not return a value. When a function's return type is specified as void , it means that the function may not return any value or it may return undefined (example, when doing console.log).
 
-🔹`never` is used to represent a type that indicates a value that will never occur. It is typically used in scenarios where a function does not return at all, or when it always throws an error or enters an infinite loop. For example:
+🔹On the other hand, `never` is used to represent a type that indicates a value that will never occur. It is typically used in scenarios where a function does not return at all, or when it always throws an error or enters an infinite loop. For example:
 
 ```
 function throwError(message: string): never {
@@ -140,7 +201,20 @@ function throwError(message: string): never {
 }
 ```
 
-In the above example, the throwError function always throws an error, so its return type is specified as never .
+```
+const infinite = () => {
+  let i: number = 1;
+  while (true) {
+    i++;
+  }
+};
+```
+
+🔹 `unknown` is similar to the "any" type but with stricter type checking. When a variable is assigned the "unknown" type, TypeScript requires explicit type checking or type assertions before performing operations on that variable.
+
+```
+(10 as unknown) as string
+```
 
 ### Type Alias, Optional Property and Optional chainning operator
 
@@ -360,7 +434,7 @@ class Coder {
 }
 ```
 
-However you can use keywords such as `public`, `readonly`, `private` or `protected` not to be so redundant:
+However you can use keywords such as `public`, `readonly`, `private` or `protected` not to be so redundant. They are called `access modifiers`:
 
 ```
 
@@ -386,9 +460,11 @@ class Coder {
 }
 ```
 
-- Public: a public property is a member variable or attribute of a class that can be accessed and modified from outside the class.
+- `Public`: a public property is a member variable or attribute of a class that can be accessed and modified from outside the class.
 
-- Private: a member variable or attribute of a class that can only be accessed and modified within the class itself. However, it could be accessed through a method:
+- `Readonly`: can only be read and not modified after it is initialized.
+
+- `Private`: a member variable or attribute of a class that can only be accessed and modified within the class itself. However, it could be accessed in a subclass, for example, through a method:
 
 ```
  public getAge() {
@@ -399,11 +475,58 @@ const Vanesa = new Coder('Vanesa', 'Indie', 36)
 console.log(Vanesa.getAge())  // `Hello, I'm 36`
 ```
 
-- Readonly: can only be read and not modified after it is initialized.
+- `Protected`: a member variable or attribute of a class that can only be accessed and modified "within the class itself and its subclasses". This allows for more control over data access and manipulation within a class hierarchy.
 
-- Protected: a member variable or attribute of a class that can be accessed and modified within the class itself and its subclasses. It is declared with the "protected" access modifier, which restricts its visibility to the class and its subclasses. Protected properties are not accessible by other parts of the program that are not subclasses of the class that defines them. This allows for more control over data access and manipulation within a class hierarchy.
+It is declared with the "protected" access modifier, which restricts its visibility to the class and its subclasses (when compiled into JS)
 
-- Definite Assignment Assertion Operator: allows developers to explicitly inform the compiler that a variable has been assigned a value, even if the compiler is unable to detect it. It is denoted by the "!" symbol placed after the variable name. This can be useful in situations where the compiler is unable to infer the assignment due to complex control flow or conditional logic. However, it is important to use this operator with caution, as it bypasses the compiler's type checking and can potentially lead to runtime errors if the variable is not actually assigned a value.
+Protected properties are not accessible by other parts of the program that are not subclasses of the class that defines them.
+
+- `Definite Assignment Assertion Operator`: allows developers to explicitly inform the compiler that a variable has been assigned a value, even if the compiler is unable to detect it. It is denoted by the "!" symbol placed after the variable name.
+
+This can be useful in situations where the compiler is unable to infer the assignment due to complex control flow or conditional logic. However, it is important to use this operator with caution, as it bypasses the compiler's type checking and can potentially lead to runtime errors if the variable is not actually assigned a value.
+
+### Getter and Setter methods in classes
+
+See the following example:
+
+```
+class Bands {
+  private dataState: string[];
+
+  constructor() {
+    this.dataState = [];
+  }
+
+  public get data(): string[] {
+    return this.dataState;
+  }
+
+  public set data(value: string[]) {
+    if (Array.isArray(value) && value.every((el) => typeof el === "string")) {
+      this.dataState = value;
+      return;
+    } else throw new Error("Param is not an array of strings"); // it will appear in the console
+  }
+}
+
+const MyBands = new Bands();
+MyBands.data = ["Neil Young", "Led Zep"];
+
+//GETTER:
+console.log(MyBands.data);
+//SETTER:
+MyBands.data = [...MyBands.data, "ZZ Top"];
+//GETTER:
+console.log(MyBands.data);
+// MyBands.data = ["Van Halen", 5150]; // must be string data
+
+```
+
+- The class has a constructor that initializes the "dataState" property as an empty array.
+
+- This property is used to store the data related to bands, which can be accessed through the getter method called "data". The setter method called "data" is used to modify the "dataState" property by assigning a new array of strings to it (Remember that setters can never return a value)
+
+- Since the "dataState" property is private, it cannot be accessed or modified directly from outside the class. To access or modify it, we need to use the public getter and setter methods provided by the class.
 
 ## Extension to help you read Typescript errors:
 

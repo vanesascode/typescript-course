@@ -1,17 +1,23 @@
-type Guitarist = {
-  name: string;
-  active?: boolean;
-  albums: (string | number)[];
-};
+class Peeps {
+  static count: number = 0;
 
-let jp: Guitarist = {
-  name: "John Doe",
-  active: true,
-  albums: ["I", "II", "IV"],
-};
+  static getCount(): number {
+    return Peeps.count;
+  }
 
-const greetGuitarist = (guitarist: Guitarist) => {
-  return `Hello ${guitarist.name}`;
-};
+  public id: number;
 
-console.log(greetGuitarist(jp));
+  constructor(public name: string) {
+    this.name = name;
+    this.id = ++Peeps.count;
+  }
+}
+
+const John = new Peeps("John");
+const Steve = new Peeps("Steve");
+const Amy = new Peeps("Amy");
+
+console.log(Amy.id);
+console.log(Steve.id);
+console.log(John.id);
+console.log(Peeps.count);
