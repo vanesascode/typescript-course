@@ -1,19 +1,13 @@
 "use strict";
-class Peeps {
-    static getCount() {
-        return Peeps.count;
-    }
-    constructor(name) {
-        this.name = name;
-        this.name = name;
-        this.id = ++Peeps.count;
-    }
-}
-Peeps.count = 0;
-const John = new Peeps("John");
-const Steve = new Peeps("Steve");
-const Amy = new Peeps("Amy");
-console.log(Amy.id);
-console.log(Steve.id);
-console.log(John.id);
-console.log(Peeps.count);
+const fetchUsers = async () => {
+    const data = await fetch("https://jsonplaceholder.typicode.com/users")
+        .then((res) => {
+        return res.json();
+    })
+        .catch((err) => {
+        if (err instanceof Error)
+            console.log(err.message);
+    });
+    return data;
+};
+fetchUsers().then((users) => console.log(users));

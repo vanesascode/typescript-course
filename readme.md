@@ -321,7 +321,7 @@ let status: Status = "success"; // OK
 let status2: Status = "others"; // ERROR
 ```
 
-### Arrays, Tuples and Objects
+### Arrays, Tuples, Objects and Enums
 
 🔹 Arrays:
 
@@ -356,53 +356,22 @@ However, assigning an array to an object of type `object` will not provide you w
 
 If you specifically want to define an array in TypeScript, it is recommended to use the `Array` type or specify the type of elements within square brackets, like `number[]` for an array of numbers or `string[]` for an array of strings.
 
-### Intersection Types
+🔹 Enums:
 
-Intersection types allow you to combine multiple types into a single type by using the `&  (ampersand) operator`. Intersection types represent values that have all the properties and methods of the combined types.
+Enums provide a way to define a set of named constants, which can be useful for representing a fixed set of values or options in your code:
 
 ```
-interface Person {
-  name: string;
-  age: number;
+
+enum Direction {
+  Up,
+  Down,
+  Left,
+  Right,
 }
 
-interface Employee {
-  companyId: string;
-  position: string;
-}
-
-type EmployeePerson = Person & Employee;
-
-const employee: EmployeePerson = {
-  name: "John",
-  age: 30,
-  companyId: "ABC123",
-  position: "Manager",
-};
-
-console.log(employee.name); // Output: John
-console.log(employee.companyId); // Output: ABC123
+const myDirection: Direction = Direction.Up;
+console.log(myDirection); // Output: 0 (Index of 'Up' in the enum)
 ```
-
-### Type indexing
-
-1. Index Signatures: Index signatures allow you to define the types of values associated with dynamic keys in an object or dynamic indexes in an array. You can use square brackets [] to define an index signature and specify the type of values associated with the keys or indexes. Here's an example:
-
-```
-interface Dictionary {
-  [key: string]: number;
-}
-
-const myDictionary: Dictionary = {
-  apple: 5,
-  banana: 3,
-  cherry: 8,
-};
-
-console.log(myDictionary['apple']); // Output: 5
-```
-
-2. Lookup Types: Lookup types allow you to extract the type of a property from an object based on its key. You can use the keyof operator to create a lookup type.
 
 ### Classes
 
@@ -528,8 +497,525 @@ console.log(MyBands.data);
 
 - Since the "dataState" property is private, it cannot be accessed or modified directly from outside the class. To access or modify it, we need to use the public getter and setter methods provided by the class.
 
+### Intersection Types
+
+Intersection types allow you to combine multiple types into a single type by using the `&  (ampersand) operator`. Intersection types represent values that have all the properties and methods of the combined types.
+
+```
+interface Person {
+  name: string;
+  age: number;
+}
+
+interface Employee {
+  companyId: string;
+  position: string;
+}
+
+type EmployeePerson = Person & Employee;
+
+const employee: EmployeePerson = {
+  name: "John",
+  age: 30,
+  companyId: "ABC123",
+  position: "Manager",
+};
+
+console.log(employee.name); // Output: John
+console.log(employee.companyId); // Output: ABC123
+```
+
+### Lookup Types:
+
+Lookup types allow you to retrieve the type of a property from another type based on a given key. They are useful when you want to extract specific properties or their types from an existing type.
+
+#### `Lookup Types` can be used in conjunction with `intersection types` to extract specific properties from multiple types and create a new type that includes only those properties.
+
+### Type indexing and keyof:
+
+Type indexing in TypeScript refers to the ability to access or manipulate object properties using index notation ( [] ) instead of dot notation ( . ). It allows you to dynamically access or assign values to object properties based on their keys. E.g:
+
+```
+interface Person {
+  name: string;
+  age: number;
+  email: string;
+}
+
+const person: Person = {
+  name: "John Doe",
+  age: 30,
+  email: "johndoe@example.com",
+};
+
+const propertyName: keyof Person = "name";
+const propertyValue = person[propertyName]; // Equivalent to person.name
+console.log(propertyValue); // Output: John Doe
+
+person["age"] = 31; // Equivalent to person.age = 31
+console.log(person.age); // Output: 31
+
+```
+
+`Index Signatures`: Index signatures allow you to define the types of values associated with dynamic keys in an object or dynamic indexes in an array. You can use square brackets [] to define an index signature and specify the type of values associated with the keys or indexes. Here's an example:
+
+```
+interface Dictionary {
+  [key: string]: number;
+}
+
+const myDictionary: Dictionary = {
+  apple: 5,
+  banana: 3,
+  cherry: 8,
+};
+
+console.log(myDictionary['apple']); // Output: 5
+```
+
+#### 👉 Typescript requires an index signature if you attempt to access an object property dynamically:
+
+In TypeScript, if you attempt to access an object property dynamically using bracket notation (e.g., object[property] ), you need to provide an index signature to ensure type safety. An index signature defines the types for all possible keys of an object that are not explicitly defined.
+
+Here's an example to illustrate this concept:
+
+```
+interface MyObject {
+  [key: string]: any; // Index signature
+}
+
+const obj: MyObject = {
+  name: "John",
+  age: 25,
+};
+
+const propertyName = "name";
+const propertyValue = obj[propertyName]; // Accessing property dynamically
+
+console.log(propertyValue); // Output: "John"
+```
+
+In the above example, we define an interface MyObject with an index signature [key: string]: any . This means that obj can have any string key, and the corresponding value can be of any type ( any in this case). By providing the index signature, TypeScript allows us to access obj dynamically using bracket notation without any compilation errors.
+
+Without the index signature, TypeScript would throw a compilation error because accessing properties dynamically can potentially lead to runtime errors if the property does not exist on the object. The index signature helps TypeScript ensure type safety by allowing dynamic property access while still enforcing type checks.
+
+It's important to note that using an index signature should be done with caution, as it bypasses some of TypeScript's static type checks.
+
+#### 👉 How can you iterate through an object you've created that does not have an index signature provided?
+
+In the following case, there would be no problem because you have an index signature:
+
+```
+interface Student {
+  [key: string]: string | number | number[] | undefined;
+  name: string;
+  GPA: number;
+  classes?: number[];
+}
+
+const student: Student = {
+  name: "Doug",
+  GPA: 3.5,
+  classes: [100, 200],
+};
+
+for (const key in student) {
+  console.log(`${key}: ${student[key]}`);
+}
+```
+
+We need to add `undefined` as a type, because we have an `optional property` (classes?).
+
+However, if you don't have the index signature, it will give an error. You have the alternative of using the `keyof operator`:
+
+```
+
+interface Student {
+name: string;
+GPA: number;
+classes?: number[];
+}
+
+const student: Student = {
+name: "Doug",
+GPA: 3.5,
+classes: [100, 200],
+};
+
+for (const key in student) {
+console.log(`${key}: ${student[key as keyof Student]}`);
+}
+
+```
+
+The `keyof` keyword in TypeScript is used to obtain a union type of all the keys (property names) of a given type or interface. It allows you to refer to the keys of an object type without explicitly specifying them.
+
+In this example, `keyof Student` is used to create a type that represents all the possible keys of the Student interface. It ensures that the key variable in the loop is constrained to only accept valid property names of the Student interface.
+
+By using key as keyof Student, the code is essentially telling TypeScript to treat key as a valid key of the Student interface. This enables the code to access the corresponding value of that property from the student object using student[key as keyof Student] .
+
+This usage ensures type safety and `prevents accessing non-existent properties or mistyped property names.`
+
+#### 👉 But what if you don't have the name of the interface (in this case Student) and only have the name of the object you created from that interface (in this case student):
+
+Then, you can use `typeof`:
+
+```
+for (const key in student) {
+  console.log(`${key}: ${student[key as keyof typeof student]}`);
+}
+
+```
+
+#### Now an example of `keyof` with a function:
+
+```
+interface Student {
+  name: string;
+  GPA: number;
+  classes?: number[];
+}
+
+const student: Student = {
+  name: "Doug",
+  GPA: 3.5,
+  classes: [100, 200],
+};
+
+const logStudentKey = (student: Student, key: keyof Student): void => {
+  console.log(`Student ${key}: ${student[key]}`);
+};
+
+logStudentKey(student, "classes");
+```
+
+### Generics
+
+Generics in TypeScript allow you to create reusable components or functions that can work with a variety of types. They provide a way to define placeholders for types that will be specified later when using the generic component or function.
+
+```
+class Box<T> {
+  private item: T;
+
+  constructor(item: T) {
+    this.item = item;
+  }
+
+  getItem(): T {
+    return this.item;
+  }
+
+  setItem(item: T): void {
+    this.item = item;
+  }
+}
+
+const numberBox = new Box<number>(42);
+console.log(numberBox.getItem()); // Output: 42
+
+const stringBox = new Box<string>("Hello, TypeScript!");
+console.log(stringBox.getItem()); // Output: Hello, TypeScript!
+
+```
+
+👉 Notice that `<number>` or `<string>`, when we defined our consts, are not necessary, but are a way of typing our new Box(es).
+
+By using generics, you can write code that is more flexible and reusable. It allows you to create functions or classes that can work with different types without sacrificing type safety.
+
+🔹 It's useful with functions:
+
+```
+const isObj = <T>(arg: T): boolean => {
+  return typeof arg === "object" && !Array.isArray(arg) && arg !== null;
+};
+
+console.log(isObj(true)); //false
+console.log(isObj("John")); //false
+console.log(isObj([1, 2, 3])); //false
+console.log(isObj({ name: "John" })); //true
+console.log(isObj(null)); //false
+
+```
+
+🔹 This is in an interface:
+
+```
+
+interface BoolCheck<T> {
+    value: T,
+    is: boolean,
+}
+
+const checkBoolValue = <T>(arg: T): BoolCheck<T> => {
+    if (Array.isArray(arg) && !arg.length) {
+        return { value: arg, is: false }
+    }
+    if (isObj(arg) && !Object.keys(arg as keyof T).length) {
+        return { value: arg, is: false }
+    }
+    return { value: arg, is: !!arg }
+}
+
+console.log(isTrue(false)); //{arg: false, is: false}
+console.log(isTrue(0)); // {arg: 0, is: false}
+console.log(isTrue(true)); // {arg: true, is: true}
+console.log(isTrue(1)); // {arg: 1, is: true}
+
+```
+
+🔹 A generic type can extend from an interface or a type:
+
+```
+type HasID = {
+  id: number;
+};
+
+const processUser = <T extends HasID>(user: T): T => {
+  return user;
+};
+
+console.log(processUser({ id: 1, name: 'Vanesa' })); => CORRECT COS IT NEEDS AN ID
+console.log(processUser({ name: 'Vanesa'})) => NOT CORRECT
+
+```
+
+### Utility Types
+
+Utility types in TypeScript are predefined type transformations that provide convenient ways to manipulate and transform existing types. They are built-in TypeScript types that help with common type operations and enable you to create more reusable and expressive code.
+
+1. 🔹 Partial<T>: Constructs a type with all properties of T set as optional.
+
+```
+
+interface Person {
+  name: string;
+  age: number;
+  email: string;
+}
+
+type PartialPerson = Partial<Person>;
+
+const partialPerson: PartialPerson = {
+  name: "John Doe",
+};
+
+```
+
+2. 🔹 Readonly<T>: Constructs a type with all properties of T set as readonly.
+
+```
+
+interface Person {
+  readonly name: string;
+  readonly age: number;
+}
+
+const person: Readonly<Person> = {
+  name: "John Doe",
+  age: 30,
+};
+
+// Error: Cannot assign to 'name' because it is a read-only property
+// person.name = "Jane Smith";
+
+console.log(person.name); // Output: John Doe
+console.log(person.age); // Output: 30
+
+```
+
+3. 🔹 Required<T>: Constructs a type with all properties of T set as required (even the optional properties!)
+
+```
+interface Person {
+  name: string;
+  age?: number;
+  email?: string;
+}
+
+type RequiredPerson = Required<Person>;
+
+const requiredPerson: RequiredPerson = {
+  name: "John Doe",
+  age: 30,
+  email: "johndoe@example.com",
+};
+
+```
+
+4. 🔹 Record<K, T>: Constructs an object type whose keys are of type K and values are of type T. So, it is used to define an object type with specified keys and values:
+
+```
+
+type Fruit = 'apple' | 'banana' | 'orange';
+type Price = number;
+
+const fruitPrices: Record<Fruit, Price> = {
+  apple: 0.5,
+  banana: 0.3,
+  orange: 0.4,
+};
+
+console.log(fruitPrices.apple); // Output: 0.5
+console.log(fruitPrices.banana); // Output: 0.3
+console.log(fruitPrices.orange); // Output: 0.4
+```
+
+Another example:
+
+```
+
+const hexColorMap: Record<string, string> = {
+    red: "FF0000",
+    green: "00FF00",
+    blue: "0000FF",
+}
+```
+
+Another example:
+
+```
+type Streams = 'salary' | 'bonus' | 'sidehustle'
+
+type Incomes = Record<Streams, number>
+
+const monthlyIncomes: Incomes = {
+    salary: 500,
+    bonus: 100,
+    sidehustle: 250
+}
+
+```
+
+So, you can define the type of Incomes as those three strings having a number as a value. This is something you cannot do with index signatures, because it will tell you that the key cannot be a literal type (e.g. [key: `salary`]:number --- this is wrong).
+
+The limitation though, is that you cannot add other key-value pairs as you could with index signatures, as we saw before:
+
+```
+interface Student {
+  [key: string]: string | number;
+  name: string;
+  GPA: number;
+}
+```
+
+Also, if we try to loop through the object, we'll also have a problem unless we use `keyof` again:
+
+```
+type Streams = 'salary' | 'bonus' | 'sidehustle'
+
+type Incomes = Record<Streams, number>
+
+const monthlyIncomes: Incomes = {
+    salary: 500,
+    bonus: 100,
+    sidehustle: 250
+}
+
+for (const revenue in monthlyIncomes) {
+    console.log(monthlyIncomes[revenue as keyof Incomes])
+}
+```
+
+5. 🔹 Extract<T, U>: The extract utility type extracts `a subset of types from a union of types`. It takes two type parameters: the union type and the subset of types to extract. It returns a new union type that only includes the types from the original union that are assignable to the subset.
+
+```
+type Union = string | number | boolean;
+
+// Extract the number and boolean types from the union
+type Extracted = Extract<Union, number | boolean>;
+// Result: Extracted = number | boolean
+
+```
+
+6. 🔹 Pick<T, K>: On the other hand, the pick utility type creates a new type by picking `specific properties from an existing type`. It takes two type parameters: the original type and the names of the properties to pick. It returns a new type that only includes the picked properties from the original type.
+
+```
+type Original = { name: string; age: number; isAdmin: boolean };
+
+// Pick specific properties from the original type
+type Picked = Pick<Original, "name" | "isAdmin">;
+// Result: Picked = { name: string; isAdmin: boolean }
+
+```
+
+Here we want to create a new type 'PersonBasicInfo' that only includes the 'name' and 'age' properties.
+
+7. 🔹 Omit<T, K>: The omit utility type creates `a new type by omitting specific properties from an existing type`. It takes two type parameters: the original type and the names of the properties to omit. It returns a new type that excludes the specified properties from the original type.
+
+```
+type Original = { name: string; age: number; isAdmin: boolean };
+
+// Omit specific properties from the original type
+type Omitted = Omit<Original, "name" | "isAdmin">;
+// Result: Omitted = { age: number }
+
+```
+
+We want to create a new type 'PersonWithoutAddress' that excludes the 'address' property.
+
+8. 🔹 Exclude<T, U>: On the other hand, the exclude utility type creates `a new type by excluding specific types from a union of types`. It takes two type parameters: the union type and the types to exclude. It returns a new union type that excludes the specified types from the original union.
+
+```
+type Union = string | number | boolean;
+
+// Exclude specific types from the union
+type Excluded = Exclude<Union, number | boolean>;
+// Result: Excluded = string
+
+```
+
+9. 🔹 NonNullable<T>: Constructs a type by excluding null and undefined from T.
+
+```
+type NullableValue = string | null | undefined;
+
+type NonNullableValue = NonNullable<NullableValue>;
+// Result: NonNullableValue = string
+
+```
+
+10. 🔹 ReturnType<T>: Extracts the return type from a function type T.
+    It takes a function type as a parameter and returns the type of the value that the function will return when called.
+
+```
+function add(a: number, b: number): number {
+  return a + b;
+}
+
+type AddReturnType = ReturnType<typeof add>;
+// Result: AddReturnType = number
+
+```
+
+11. 🔹 Parameters<T>: It takes a function type as a parameter and returns a tuple type containing the types of the function's parameters:
+
+```
+type MyFunctionType = (a: string, b: number) => boolean;
+
+type MyParameters = Parameters<MyFunctionType>;
+// Result: MyParameters = [string, number]
+
+
+11. 🔹 Awaited: The awaited utility type is not a built-in type in TypeScript. It is a custom utility type that can be defined to infer the resolved type of a Promise. With the Awaited utility type, you can infer the resolved type of a Promise without explicitly specifying it. Here's an example:
+
+```
+
+async function fetchData(): Promise<string> {
+return "data";
+}
+
+type ResolvedType = Awaited<ReturnType<typeof fetchData>>;
+// ResolvedType is now string
+
+```
+
+In this example, the ResolvedType is inferred as string because the ReturnType utility is used to extract the return type of the fetchData function, and then the Awaited utility type is applied to infer the resolved type of the Promise returned by fetchData.
+
+The awaited utility type can be helpful when working with asynchronous code and you want to infer the resolved type of a Promise dynamically.
+
 ## Extension to help you read Typescript errors:
 
 It is called `Pretty Typescript Errors` by "yoavbls" and it wil make complex errors more understandable.
 
 You can also install `Error Lens` by Alexander to see the errors in red next to the line it is located.
+```

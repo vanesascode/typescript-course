@@ -1,23 +1,21 @@
-class Peeps {
-  static count: number = 0;
-
-  static getCount(): number {
-    return Peeps.count;
-  }
-
-  public id: number;
-
-  constructor(public name: string) {
-    this.name = name;
-    this.id = ++Peeps.count;
-  }
+interface User {
+  id: number;
+  name: string;
+  username: string;
+  email: string;
 }
 
-const John = new Peeps("John");
-const Steve = new Peeps("Steve");
-const Amy = new Peeps("Amy");
+const fetchUsers = async (): Promise<User[]> => {
+  const data = await fetch("https://jsonplaceholder.typicode.com/users")
+    .then((res) => {
+      return res.json();
+    })
+    .catch((err) => {
+      if (err instanceof Error) console.log(err.message);
+    });
+  return data;
+};
 
-console.log(Amy.id);
-console.log(Steve.id);
-console.log(John.id);
-console.log(Peeps.count);
+type FetchUsersReturnType = Awaited<ReturnType<typeof fetchUsers>>;
+
+fetchUsers().then((users) => console.log(users));
